@@ -13,4 +13,6 @@ public class LoginRequest {
 
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;
+
+    private boolean rememberMe;
 }
