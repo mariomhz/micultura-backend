@@ -35,11 +35,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
 
+    /** Converts RuntimeException("… no encontrado: …") to 404 */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        String msg = ex.getMessage() != null ? ex.getMessage() : "";
+        if (msg.toLowerCase().contains("no encontrad")) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", msg);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        }
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", "Error interno del servidor");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("message", "Error interno del servidor");
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }
