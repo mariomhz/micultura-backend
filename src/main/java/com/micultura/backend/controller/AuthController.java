@@ -7,6 +7,7 @@ import com.micultura.backend.service.AuthResult;
 import com.micultura.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -27,6 +28,12 @@ public class AuthController {
     static final String REFRESH_COOKIE_PATH = "/api/auth";
 
     private final AuthService authService;
+
+    @Value("${app.security.cookie-secure:false}")
+    private boolean cookieSecure;
+
+    @Value("${app.security.cookie-same-site:Lax}")
+    private String cookieSameSite;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -70,8 +77,8 @@ public class AuthController {
     private ResponseCookie buildRefreshCookie(String value, long ttlMs) {
         return ResponseCookie.from(REFRESH_COOKIE_NAME, value)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .path(REFRESH_COOKIE_PATH)
                 .maxAge(ttlMs / 1000)
                 .build();
@@ -80,8 +87,8 @@ public class AuthController {
     private ResponseCookie clearRefreshCookie() {
         return ResponseCookie.from(REFRESH_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .path(REFRESH_COOKIE_PATH)
                 .maxAge(0)
                 .build();
