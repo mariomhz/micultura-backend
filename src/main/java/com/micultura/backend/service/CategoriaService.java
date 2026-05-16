@@ -17,7 +17,7 @@ public class CategoriaService {
     public List<CategoriaResponse> findAll() {
         return categoriaRepository.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(CategoriaService::toResponse)
                 .toList();
     }
 
