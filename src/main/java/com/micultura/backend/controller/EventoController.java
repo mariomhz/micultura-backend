@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/events")
@@ -24,6 +25,10 @@ import java.time.LocalDate;
 public class EventoController {
 
     private final EventoService eventoService;
+
+    /** Fields the client is allowed to sort by. Anything else falls back to fecha,asc. */
+    private static final Set<String> SORTABLE_FIELDS = Set.of("fecha", "precio", "titulo");
+    private static final String DEFAULT_SORT_FIELD = "fecha";
 
     // ── Public read endpoints ────────────────────────────────────────────────
 
@@ -97,15 +102,12 @@ public class EventoController {
     // ── Helper ───────────────────────────────────────────────────────────────
 
     private Pageable buildPageable(int page, int size, String sort) {
-        try {
-            String[] parts = sort.split(",");
-            String field     = parts[0].trim();
-            Sort.Direction dir = parts.length > 1 && parts[1].trim().equalsIgnoreCase("desc")
-                    ? Sort.Direction.DESC
-                    : Sort.Direction.ASC;
-            return PageRequest.of(page, size, Sort.by(dir, field));
-        } catch (Exception e) {
-            return PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "fecha"));
-        }
+        String[] parts = sort == null ? new String[0] : sort.split(",");
+        String requestedField = parts.length > 0 ? parts[0].trim() : "";
+        String field = SORTABLE_FIELDS.contains(requestedField) ? requestedField : DEFAULT_SORT_FIELD;
+        Sort.Direction dir = parts.length > 1 && parts[1].trim().equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        return PageRequest.of(page, size, Sort.by(dir, field));
     }
 }
