@@ -46,7 +46,21 @@ CREATE DATABASE micultura;
 
 ## Configuration
 
-Configuration lives in `src/main/resources/application.properties`. Anything sensitive should be overridden via environment variables in non-local environments.
+Configuration lives in `src/main/resources/application.properties`. Sensitive values (DB password, JWT secret) are **required** and have no defaults — the app will fail to start without them.
+
+### Local setup
+
+Copy `.env.example` to `.env` at the repo root and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+The `spring-dotenv` library loads `.env` at startup and exposes its entries as Spring properties, so you don't need to export anything in your shell. `.env` is gitignored.
+
+In production, set the same variables through your platform's environment configuration (Docker env, systemd, Kubernetes secrets, etc.) — `.env` is not used outside local dev.
+
+### All properties
 
 | Property                                   | Env var                          | Default                          | Notes |
 |--------------------------------------------|----------------------------------|----------------------------------|-------|
