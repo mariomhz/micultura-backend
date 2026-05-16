@@ -37,7 +37,7 @@ public class Evento {
     private Double latitud;
     private Double longitud;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
