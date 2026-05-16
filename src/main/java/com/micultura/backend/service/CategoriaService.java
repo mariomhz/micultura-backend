@@ -2,6 +2,7 @@ package com.micultura.backend.service;
 
 import com.micultura.backend.dto.CategoriaResponse;
 import com.micultura.backend.entity.Categoria;
+import com.micultura.backend.exception.ResourceNotFoundException;
 import com.micultura.backend.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class CategoriaService {
 
     public CategoriaResponse findById(Long id) {
         Categoria cat = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + id));
         return toResponse(cat);
     }
 

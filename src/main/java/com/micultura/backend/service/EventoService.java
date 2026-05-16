@@ -5,6 +5,7 @@ import com.micultura.backend.dto.EventoResponse;
 import com.micultura.backend.dto.PagedResponse;
 import com.micultura.backend.entity.Categoria;
 import com.micultura.backend.entity.Evento;
+import com.micultura.backend.exception.ResourceNotFoundException;
 import com.micultura.backend.repository.CategoriaRepository;
 import com.micultura.backend.repository.EventoRepository;
 import com.micultura.backend.spec.EventoSpecification;
@@ -53,7 +54,7 @@ public class EventoService {
     public EventoResponse findById(Long id) {
         Evento evento = eventoRepository.findById(id)
                 .filter(Evento::isActivo)
-                .orElseThrow(() -> new RuntimeException("Evento no encontrado: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado: " + id));
         return toResponse(evento);
     }
 
@@ -79,7 +80,7 @@ public class EventoService {
 
     public EventoResponse update(Long id, EventoRequest req) {
         Evento evento = eventoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento no encontrado: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado: " + id));
         Categoria categoria = categoriaOrThrow(req.categoriaId());
 
         evento.setTitulo(req.titulo());
@@ -100,7 +101,7 @@ public class EventoService {
     /** Soft delete — sets activo = false */
     public void delete(Long id) {
         Evento evento = eventoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento no encontrado: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado: " + id));
         evento.setActivo(false);
         eventoRepository.save(evento);
     }
@@ -109,7 +110,7 @@ public class EventoService {
 
     private Categoria categoriaOrThrow(Long id) {
         return categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + id));
     }
 
     private EventoResponse toResponse(Evento e) {
