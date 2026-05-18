@@ -79,11 +79,6 @@ public class DataSeeder implements CommandLineRunner {
     // ── 2. Events ─────────────────────────────────────────────────────────────
 
     private void seedEventos() {
-        if (eventoRepository.count() > 0) {
-            log.info("Events already seeded — skipping.");
-            return;
-        }
-
         Map<String, Categoria> cats = categoriaRepository.findAll().stream()
             .collect(Collectors.toMap(Categoria::getNombre, Function.identity()));
 
@@ -443,10 +438,246 @@ public class DataSeeder implements CommandLineRunner {
                 .categoria(gastro)
                 .imagenUrl(IMG_GASTRO)
                 .precio(BigDecimal.ZERO)
+                .build(),
+
+            // ── REAL EVENTS — TENERIFE 2026 ─────────────────────────────────
+            // Sourced from publicly announced programmes (Auditorio de Tenerife,
+            // Tenerife Music Festival, Cook Music Fest, FIMUCITÉ, FICMEC,
+            // MUECA, GastroCanarias, traditional patron-saint festivities).
+
+            Evento.builder()
+                .titulo("Tenerife Music Festival — Día Urban: Rels B & Nathy Peluso")
+                .descripcion("Primera jornada del festival más grande del año en Santa Cruz. La noche urbana arranca con Nathy Peluso y cierra con Rels B presentando su nuevo disco. Recinto al aire libre con vistas al puerto.")
+                .fecha(LocalDate.of(2026, 6, 12))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Recinto Portuario, Santa Cruz de Tenerife")
+                .latitud(28.4756).longitud(-16.2356)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA)
+                .precio(new BigDecimal("55.00"))
+                .enlaceCompra("https://tenerifemusicfestival.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Tenerife Music Festival — Día Pop: Camilo & Pablo Alborán")
+                .descripcion("Segunda jornada del festival con la cara más mainstream del pop en español. Camilo y Pablo Alborán comparten cartel en una de las citas musicales del verano en Canarias.")
+                .fecha(LocalDate.of(2026, 6, 13))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Recinto Portuario, Santa Cruz de Tenerife")
+                .latitud(28.4756).longitud(-16.2356)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA2)
+                .precio(new BigDecimal("60.00"))
+                .enlaceCompra("https://tenerifemusicfestival.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Cook Music Fest — Reguetón en el Puerto")
+                .descripcion("Don Omar regresa a Europa exclusivamente para Cook Music Fest, junto a Farruko, Myke Towers, Lola Índigo y Rubén Blades. Tres días de reguetón, latino y mestizaje frente al Atlántico.")
+                .fecha(LocalDate.of(2026, 7, 17))
+                .hora(LocalTime.of(19, 30))
+                .ubicacion("Recinto Portuario, Santa Cruz de Tenerife")
+                .latitud(28.4756).longitud(-16.2356)
+                .categoria(musica)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(new BigDecimal("75.00"))
+                .enlaceCompra("https://cookmusicfest.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("FIMUCITÉ 20 — Banda Sonora del Cine")
+                .descripcion("Vigésima edición del Festival Internacional de Música de Cine de Tenerife. Conciertos sinfónicos con grandes temas del cine y la televisión, conducidos por la Orquesta Sinfónica de Tenerife.")
+                .fecha(LocalDate.of(2026, 7, 5))
+                .hora(LocalTime.of(20, 30))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA2)
+                .precio(new BigDecimal("25.00"))
+                .enlaceCompra("https://fimucite.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("I Festival de Timple")
+                .descripcion("Primera edición del festival dedicado al timple, el instrumento de cuerda emblemático de Canarias. Talleres, ponencias y conciertos de los principales intérpretes del archipiélago.")
+                .fecha(LocalDate.of(2026, 5, 22))
+                .hora(LocalTime.of(19, 0))
+                .ubicacion("Teatro Leal, San Cristóbal de La Laguna")
+                .latitud(28.4882).longitud(-16.3157)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA)
+                .precio(new BigDecimal("15.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("MAPAS 2026: «Bogotá» — Andrea Peña & Artists")
+                .descripcion("Apertura del ciclo Mapas 2026 del Auditorio de Tenerife con la compañía canadiense Andrea Peña & Artists presentando «Bogotá», una pieza híbrida entre danza contemporánea y arte visual.")
+                .fecha(LocalDate.of(2026, 6, 30))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(teatro)
+                .imagenUrl(IMG_DANZA)
+                .precio(new BigDecimal("15.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("MAPAS 2026: «Hamlet, Prince of Denmark» — Robert Lepage")
+                .descripcion("El director canadiense Robert Lepage y Ex Machina presentan una relectura íntima del Hamlet shakespeariano para un único intérprete, Guillaume Côté. Cita imprescindible del programa Mapas.")
+                .fecha(LocalDate.of(2026, 7, 4))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(teatro)
+                .imagenUrl(IMG_TEATRO)
+                .precio(new BigDecimal("15.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("MAPAS 2026: «Hammer» — Alexander Ekman")
+                .descripcion("El coreógrafo sueco Alexander Ekman estrena «Hammer» en el Auditorio de Tenerife. Pieza de gran formato que cruza humor, virtuosismo técnico y reflexión sobre el cuerpo en escena.")
+                .fecha(LocalDate.of(2026, 7, 11))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(teatro)
+                .imagenUrl(IMG_DANZA)
+                .precio(new BigDecimal("15.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Les Ballets Espagnols de La Argentina")
+                .descripcion("Compañía con base en París que rescata el patrimonio coreográfico de Antonia Mercé «La Argentina», pionera de la danza española. Programa con piezas clásicas en versión orquestal.")
+                .fecha(LocalDate.of(2026, 6, 5))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(teatro)
+                .imagenUrl(IMG_DANZA)
+                .precio(new BigDecimal("25.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("MUECA — Festival de Artes de Calle")
+                .descripcion("Cuatro días en los que Puerto de la Cruz se transforma en un gran escenario al aire libre. Teatro, circo, danza, payasos y música en vivo de compañías internacionales. Acceso libre.")
+                .fecha(LocalDate.of(2026, 5, 9))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Casco histórico, Puerto de la Cruz")
+                .latitud(28.4157).longitud(-16.5469)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Día de Canarias — Plaza de España")
+                .descripcion("Celebración del Día de Canarias con folclore, gastronomía típica, talleres infantiles y conciertos de grupos canarios en la Plaza de España. Entrada libre, ambiente familiar.")
+                .fecha(LocalDate.of(2026, 5, 30))
+                .hora(LocalTime.of(12, 0))
+                .ubicacion("Plaza de España, Santa Cruz de Tenerife")
+                .latitud(28.4631).longitud(-16.2526)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Veranos del Taoro")
+                .descripcion("Ciclo de conciertos en los jardines del Casino Taoro, con propuestas que cruzan jazz, bossa nova y música canaria contemporánea. Vistas privilegiadas al Atlántico y al Teide al atardecer.")
+                .fecha(LocalDate.of(2026, 6, 19))
+                .hora(LocalTime.of(21, 0))
+                .ubicacion("Jardines del Casino Taoro, Puerto de la Cruz")
+                .latitud(28.4216).longitud(-16.5430)
+                .categoria(festival)
+                .imagenUrl(IMG_JAZZ)
+                .precio(new BigDecimal("12.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Fiestas del Carmen — Procesión Marítima")
+                .descripcion("La patrona de Puerto de la Cruz sale del Muelle Pesquero en procesión marítima acompañada por decenas de barcas engalanadas. Acto popular con verbenas, fuegos y mucho ambiente vecinal.")
+                .fecha(LocalDate.of(2026, 7, 16))
+                .hora(LocalTime.of(19, 0))
+                .ubicacion("Muelle Pesquero, Puerto de la Cruz")
+                .latitud(28.4185).longitud(-16.5495)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Fiestas de la Candelaria — Patrona de Canarias")
+                .descripcion("La Villa de Candelaria recibe a miles de peregrinos en la fiesta mayor de la patrona del archipiélago. Misa, procesión, fuegos artificiales y representación teatral de la aparición de la Virgen.")
+                .fecha(LocalDate.of(2026, 8, 14))
+                .hora(LocalTime.of(19, 0))
+                .ubicacion("Plaza de la Patrona de Canarias, Candelaria")
+                .latitud(28.3525).longitud(-16.3700)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Romería de Tegueste")
+                .descripcion("Una de las romerías más concurridas del norte de Tenerife. Carretas tiradas por bueyes, trajes típicos, parrandas en directo y degustación de productos tradicionales canarios por todo el pueblo.")
+                .fecha(LocalDate.of(2026, 5, 17))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Casco urbano, Tegueste")
+                .latitud(28.5236).longitud(-16.3413)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("FICMEC — Festival Internacional de Cine Medioambiental")
+                .descripcion("28ª edición del FICMEC, dedicado al cine sobre ecología, naturaleza y medioambiente. Proyecciones gratuitas al aire libre, mesas redondas y feria agroecológica complementaria.")
+                .fecha(LocalDate.of(2026, 5, 30))
+                .hora(LocalTime.of(20, 30))
+                .ubicacion("Plaza de la Libertad, Garachico")
+                .latitud(28.3737).longitud(-16.7639)
+                .categoria(cine)
+                .imagenUrl(IMG_CINE)
+                .precio(BigDecimal.ZERO)
+                .enlaceCompra("https://ficmec.es")
+                .build(),
+
+            Evento.builder()
+                .titulo("GastroCanarias 2026 — Salón Gastronómico")
+                .descripcion("Undécima edición del salón profesional de la gastronomía canaria. 17.000 m² de exposición con más de 200 stands de productores, bodegas, chefs y restauradores del archipiélago. Catas y showcooking en directo.")
+                .fecha(LocalDate.of(2026, 5, 20))
+                .hora(LocalTime.of(10, 0))
+                .ubicacion("Recinto Ferial de Tenerife, Santa Cruz")
+                .latitud(28.4631).longitud(-16.2526)
+                .categoria(gastro)
+                .imagenUrl(IMG_GASTRO)
+                .precio(new BigDecimal("8.00"))
+                .enlaceCompra("https://salongastronomicodecanarias.com")
                 .build()
         );
 
-        eventoRepository.saveAll(eventos);
-        log.info("Seeded {} events.", eventos.size());
+        // Idempotent: skip events whose title is already in the DB. Lets new
+        // entries added to this list land on the next boot without wiping
+        // existing data.
+        java.util.Set<String> existingTitles = eventoRepository.findAll().stream()
+            .map(Evento::getTitulo)
+            .collect(Collectors.toSet());
+
+        List<Evento> toInsert = eventos.stream()
+            .filter(e -> !existingTitles.contains(e.getTitulo()))
+            .toList();
+
+        if (toInsert.isEmpty()) {
+            log.info("All {} defined events already present — nothing to seed.", eventos.size());
+            return;
+        }
+
+        eventoRepository.saveAll(toInsert);
+        log.info("Seeded {} new events ({} already present).",
+                toInsert.size(), eventos.size() - toInsert.size());
     }
 }
