@@ -1,0 +1,69 @@
+# Render Blueprint — provisions web service + managed Postgres in one apply.
+# Docs: https://render.com/docs/blueprint-spec
+# Apply with: New + > Blueprint > point at this repo on Render dashboard.
+
+databases:
+  - name: micultura-db
+    databaseName: micultura
+    user: micultura
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: micultura-backend
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/categories
+    autoDeploy: true
+
+    envVars:
+      # ── Database (wired from the managed Postgres above) ──────────────────
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: micultura-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: micultura-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: micultura-db
+          property: password
+
+      # ── Secrets ───────────────────────────────────────────────────────────
+      # Generated once by Render and reused across deploys. Same value
+      # must be set in Vercel as JWT_SECRET so the middleware can verify.
+      - key: APP_JWT_SECRET
+        generateValue: true
+
+      # ── App configuration ─────────────────────────────────────────────────
+      # Use 'update' on first deploy so Hibernate creates the schema, then
+      # switch to 'validate' once the schema is stable.
+      - key: APP_DB_DDL_AUTO
+        value: update
+
+      # Quieter logs in production.
+      - key: APP_JPA_SHOW_SQL
+        value: "false"
+
+      # Seed runs once (it no-ops if events already exist). Switch to false
+      # after the first successful deploy.
+      - key: APP_SEED_ENABLED
+        value: "true"
+
+      # Frontend origins. Replace with your real Vercel domain (and custom
+      # domain if you add one). Comma-separated, supports https://*.vercel.app.
+      - key: APP_CORS_ALLOWED_ORIGINS
+        value: https://your-app.vercel.app
+
+      # HTTPS in production → cookies must be Secure + SameSite=None
+      # (frontend and backend are on different domains).
+      - key: APP_SECURITY_COOKIE_SECURE
+        value: "true"
+      - key: APP_SECURITY_COOKIE_SAME_SITE
+        value: None
