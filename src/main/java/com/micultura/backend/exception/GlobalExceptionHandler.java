@@ -21,8 +21,9 @@ public class GlobalExceptionHandler {
         );
 
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Error de validación");
-        body.put("errors", fieldErrors);
+        body.put("error", "Error de validación");
+        body.put("code", "VALIDATION_ERROR");
+        body.put("fields", fieldErrors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -30,7 +31,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", ex.getReason());
+        body.put("error", ex.getReason() != null ? ex.getReason() : ex.getMessage());
+        body.put("code", "REQUEST_ERROR");
 
         return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
@@ -38,14 +40,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", ex.getMessage());
+        body.put("error", ex.getMessage());
+        body.put("code", "NOT_FOUND");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Error interno del servidor");
+        body.put("error", "Error interno del servidor");
+        body.put("code", "INTERNAL_ERROR");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }
