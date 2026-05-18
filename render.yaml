@@ -7,6 +7,7 @@ databases:
     databaseName: micultura
     user: micultura
     plan: free
+    region: frankfurt
     postgresMajorVersion: "16"
 
 services:
