@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
 
+                        // AI search is public — anonymous visitors can ask the assistant.
+                        .requestMatchers(HttpMethod.POST, "/api/search/ai").permitAll()
+
                         // Everything else requires a valid JWT
                         .anyRequest().authenticated()
                 )
