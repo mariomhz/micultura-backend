@@ -20,6 +20,9 @@
     <properties>
         <java.version>17</java.version>
         <jjwt.version>0.12.6</jjwt.version>
+        <!-- Override Spring Boot 3.3.6's managed Lombok (1.18.34), which breaks
+             on newer JDK builds with "TypeTag :: UNKNOWN" inside IntelliJ. -->
+        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <dependencies>
