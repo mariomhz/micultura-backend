@@ -22,10 +22,21 @@ services:
 
     envVars:
       # ── Database (wired from the managed Postgres above) ──────────────────
-      - key: SPRING_DATASOURCE_URL
+      # Render exposes `connectionString` as postgres://… but JDBC requires
+      # jdbc:postgresql://…, so we expose the components separately and let
+      # application.properties assemble the JDBC URL.
+      - key: DB_HOST
         fromDatabase:
           name: micultura-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: micultura-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: micultura-db
+          property: database
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: micultura-db
