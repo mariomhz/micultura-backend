@@ -657,6 +657,71 @@ public class DataSeeder implements CommandLineRunner {
                 .imagenUrl(IMG_GASTRO)
                 .precio(new BigDecimal("8.00"))
                 .enlaceCompra("https://salongastronomicodecanarias.com")
+                .build(),
+
+            // ── EXTRA JUNIO 2026 ────────────────────────────────────────────
+
+            Evento.builder()
+                .titulo("Corpus Christi en La Laguna — Alfombras")
+                .descripcion("San Cristóbal de La Laguna celebra el Corpus Christi con 68 alfombras de flores, sal y materiales naturales decorando las calles del casco histórico, por donde pasa la procesión del Santísimo Sacramento. Una tradición centenaria del Patrimonio de la Humanidad.")
+                .fecha(LocalDate.of(2026, 6, 7))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Casco histórico, San Cristóbal de La Laguna")
+                .latitud(28.4874).longitud(-16.3159)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Corpus Christi en La Orotava — Alfombras de Flores")
+                .descripcion("La gran tapiz de tierras volcánicas del Teide tiñe la plaza del Ayuntamiento de La Orotava en la cita declarada de Interés Turístico Nacional. Decenas de alfombras florales únicas elaboradas por las hermandades locales durante toda la noche anterior.")
+                .fecha(LocalDate.of(2026, 6, 14))
+                .hora(LocalTime.of(10, 0))
+                .ubicacion("Plaza del Ayuntamiento, La Orotava")
+                .latitud(28.3905).longitud(-16.5236)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Dúo del Valle — Recital de Piano a Cuatro Manos")
+                .descripcion("Los hermanos Víctor y Luis del Valle abren el ciclo Primavera Musical del Auditorio con un programa romántico a cuatro manos: obras de Schubert, Brahms y Ravel. Duración aproximada 75 minutos sin descanso.")
+                .fecha(LocalDate.of(2026, 6, 2))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Sala de Cámara, Auditorio de Tenerife")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA2)
+                .precio(new BigDecimal("18.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("FICMEC — Sede Icod de los Vinos")
+                .descripcion("Segunda sede del Festival Internacional de Cine Medioambiental de Canarias. Proyecciones gratuitas al aire libre con largometrajes y cortos seleccionados, mesa redonda sobre cambio climático y feria agroecológica complementaria.")
+                .fecha(LocalDate.of(2026, 6, 6))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Plaza de la Pila, Icod de los Vinos")
+                .latitud(28.3717).longitud(-16.7100)
+                .categoria(cine)
+                .imagenUrl(IMG_CINE)
+                .precio(BigDecimal.ZERO)
+                .enlaceCompra("https://ficmec.es")
+                .build(),
+
+            Evento.builder()
+                .titulo("La Misa — Ritual de Techno al Aire Libre")
+                .descripcion("Ceremonia inmersiva de techno al amanecer en un emplazamiento secreto del sur. Puesta en escena oscura, cargada de energía, pensada como un ritual sagrado para la pista. Producción de Farra World, ubicación se revela 24 h antes del evento.")
+                .fecha(LocalDate.of(2026, 6, 27))
+                .hora(LocalTime.of(23, 0))
+                .ubicacion("Ubicación secreta — Sur de Tenerife")
+                .latitud(28.0617).longitud(-16.7241)
+                .categoria(musica)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(new BigDecimal("35.00"))
+                .enlaceCompra("https://farra.world")
                 .build()
         );
 
