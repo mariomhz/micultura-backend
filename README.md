@@ -36,7 +36,7 @@ src/main/java/com/micultura/backend/
 
 - Java 17+
 - PostgreSQL 14+ running locally with a database named `micultura`
-- Maven (the wrapper `mvnw` is included, so a local install isn't strictly required)
+- Maven 3.9+ (no wrapper yet — generate one with `mvn -N wrapper:wrapper` if you want)
 
 ```sql
 CREATE DATABASE micultura;
@@ -68,6 +68,8 @@ In production, set the same variables through your platform's environment config
 | `spring.datasource.username`               | `SPRING_DATASOURCE_USERNAME`     | `postgres`                       | |
 | `spring.datasource.password`               | `SPRING_DATASOURCE_PASSWORD`     | *(set per environment)*          | Required |
 | `spring.jpa.hibernate.ddl-auto`            | `APP_DB_DDL_AUTO`                | `update`                         | Use `validate` in prod |
+| `spring.jpa.show-sql`                      | `APP_JPA_SHOW_SQL`               | `true`                           | Set to `false` in prod |
+| `server.port`                              | `PORT`                           | `8080`                           | Render/Railway/Fly inject this |
 | `app.jwt.secret`                           | `APP_JWT_SECRET`                 | *(set per environment)*          | UTF-8 string, ≥ 32 chars |
 | `app.jwt.access-expiration-ms`             | `APP_JWT_ACCESS_EXPIRATION_MS`   | `900000` (15 min)                | |
 | `app.jwt.refresh-expiration-ms`            | `APP_JWT_REFRESH_EXPIRATION_MS`  | `604800000` (7 days)             | |
@@ -75,14 +77,14 @@ In production, set the same variables through your platform's environment config
 | `app.cors.allowed-origins`                 | `APP_CORS_ALLOWED_ORIGINS`       | `http://localhost:3000`          | Comma-separated, supports `https://*.example.com` patterns |
 | `app.security.cookie-secure`               | `APP_SECURITY_COOKIE_SECURE`     | `false`                          | Must be `true` over HTTPS |
 | `app.security.cookie-same-site`            | `APP_SECURITY_COOKIE_SAME_SITE`  | `Lax`                            | `None` for cross-site frontends |
-| `app.seed.enabled`                         | `APP_SEED_ENABLED`               | unset                            | `true` to run `DataSeeder` (local only) |
+| `app.seed.enabled`                         | `APP_SEED_ENABLED`               | `true`                           | Set to `false` in prod once the DB is populated |
 
 ---
 
 ## Running locally
 
 ```bash
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 Server listens on `http://localhost:8080`. With `app.seed.enabled=true` on first boot, `DataSeeder` inserts six categories and ~25 Tenerife events.
@@ -90,9 +92,37 @@ Server listens on `http://localhost:8080`. With `app.seed.enabled=true` on first
 Build a jar:
 
 ```bash
-./mvnw clean package
+mvn clean package
 java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
+
+Or build the deployable container image locally:
+
+```bash
+docker build -t micultura-backend .
+docker run --rm -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/micultura \
+  -e SPRING_DATASOURCE_PASSWORD=changeme \
+  -e APP_JWT_SECRET=local-dev-secret-at-least-32-characters \
+  micultura-backend
+```
+
+---
+
+## Deploying to Render
+
+The repo includes `render.yaml` (Blueprint) and `Dockerfile`, so the whole stack — web service + managed Postgres + env vars — provisions in one click.
+
+1. **Push to GitHub** (already done — repo is `SomosDeWeb/pi-25-26-backend-opal`).
+2. On **dashboard.render.com**, click *New +* → *Blueprint* and select this repo.
+3. Render reads `render.yaml`, creates the Postgres database, wires its connection string into the web service, and generates a fresh `APP_JWT_SECRET`.
+4. Edit `APP_CORS_ALLOWED_ORIGINS` to your real Vercel URL (the blueprint ships a placeholder).
+5. Copy the auto-generated `APP_JWT_SECRET` from Render → set it as `JWT_SECRET` in Vercel so the frontend middleware can verify tokens.
+6. First deploy will run `DataSeeder` (because `APP_SEED_ENABLED=true`). After a successful boot, switch `APP_SEED_ENABLED=false` and `APP_DB_DDL_AUTO=validate`.
+
+Free-tier caveats:
+- The web service sleeps after ~15 minutes of inactivity (cold start ~30 s on next request).
+- The managed Postgres free instance expires after 90 days unless upgraded.
 
 ---
 
@@ -153,19 +183,22 @@ Supported query parameters on `GET /api/events`:
 
 ## Error format
 
-All errors return JSON:
+All errors return JSON with `error` (human message) + `code` (machine identifier):
 
 ```json
-{ "message": "Evento no encontrado: 42" }
+{ "error": "Evento no encontrado: 42", "code": "NOT_FOUND" }
 ```
 
-Validation errors add a `errors` map keyed by field name:
+Validation errors add a `fields` map keyed by field name:
 
 ```json
 {
-  "message": "Error de validación",
-  "errors": { "email": "El email es obligatorio" }
+  "error": "Error de validación",
+  "code": "VALIDATION_ERROR",
+  "fields": { "email": "El email es obligatorio" }
 }
 ```
+
+Codes: `VALIDATION_ERROR` (400), `REQUEST_ERROR` (4xx — from `ResponseStatusException`), `NOT_FOUND` (404), `INTERNAL_ERROR` (500).
 
 Status codes follow the usual conventions: `400` for validation, `401` for missing/invalid auth, `403` for forbidden, `404` for missing resources, `500` for everything else.
