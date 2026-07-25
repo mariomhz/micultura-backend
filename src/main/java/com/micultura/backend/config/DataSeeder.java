@@ -4,6 +4,7 @@ import com.micultura.backend.entity.Categoria;
 import com.micultura.backend.entity.Evento;
 import com.micultura.backend.repository.CategoriaRepository;
 import com.micultura.backend.repository.EventoRepository;
+import com.micultura.backend.repository.SavedEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -18,21 +19,16 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * MC-09-04 — Seed de eventos de Tenerife.
- * Inserts 6 categories and 25+ culturally credible events on first boot.
- * Fully idempotent: skips categories/events that already exist.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class DataSeeder implements CommandLineRunner {
 
-    private final CategoriaRepository categoriaRepository;
-    private final EventoRepository    eventoRepository;
+    private final CategoriaRepository  categoriaRepository;
+    private final EventoRepository     eventoRepository;
+    private final SavedEventRepository savedEventRepository;
 
-    // ── Unsplash placeholders (deterministic, no sign-in required) ────────────
     private static final String IMG_MUSICA      = "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80";
     private static final String IMG_TEATRO      = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80";
     private static final String IMG_ARTE        = "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&q=80";
@@ -49,7 +45,6 @@ public class DataSeeder implements CommandLineRunner {
         seedEventos();
     }
 
-    // ── 1. Categories ─────────────────────────────────────────────────────────
 
     private void seedCategorias() {
         List<Object[]> defs = List.of(
@@ -76,7 +71,6 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
-    // ── 2. Events ─────────────────────────────────────────────────────────────
 
     private void seedEventos() {
         Map<String, Categoria> cats = categoriaRepository.findAll().stream()
@@ -89,12 +83,10 @@ public class DataSeeder implements CommandLineRunner {
         Categoria cine     = cats.get("Cine");
         Categoria gastro   = cats.get("Gastronomía");
 
-        // Helper: today = 2026-05-15 (current date per system context)
         LocalDate base = LocalDate.of(2026, 5, 15);
 
         List<Evento> eventos = List.of(
 
-            // ── MÚSICA ──────────────────────────────────────────────────────
 
             Evento.builder()
                 .titulo("Noche de Ópera en el Auditorio")
@@ -147,7 +139,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Rock en el Puerto — Ciclo Verano")
+                .titulo("Rock en el Puerto: Ciclo Verano")
                 .descripcion("El Paseo de San Telmo de Puerto de la Cruz acoge cada viernes de junio a bandas canarias de rock, indie y pop alternativo. Entrada gratuita, ambiente familiar y vistas al Atlántico.")
                 .fecha(base.plusDays(16))
                 .hora(LocalTime.of(20, 0))
@@ -158,10 +150,9 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(BigDecimal.ZERO)
                 .build(),
 
-            // ── TEATRO ──────────────────────────────────────────────────────
 
             Evento.builder()
-                .titulo("La Casa de Bernarda Alba — Teatro Guimerá")
+                .titulo("La Casa de Bernarda Alba: Teatro Guimerá")
                 .descripcion("La compañía Teatro del Ángel trae al escenario histórico del Teatro Guimerá la obra maestra de Federico García Lorca. Una producción de alto voltaje emocional con escenografía minimalista y reparto de lujo.")
                 .fecha(base.plusDays(3))
                 .hora(LocalTime.of(20, 0))
@@ -199,7 +190,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Títeres en el Parque — Función Infantil")
+                .titulo("Títeres en el Parque: Función Infantil")
                 .descripcion("Compañía La Llave Maestra presenta «El Dragón y la Bruma», una obra de títeres para niños entre 3 y 10 años ambientada en un volcán mágico canario. Sesiones a las 11h y 13h.")
                 .fecha(base.plusDays(7))
                 .hora(LocalTime.of(11, 0))
@@ -210,14 +201,13 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(new BigDecimal("4.00"))
                 .build(),
 
-            // ── ARTE ────────────────────────────────────────────────────────
 
             Evento.builder()
-                .titulo("Exposición: «Atlántico Profundo» — TEA")
+                .titulo("Exposición: «Atlántico Profundo», TEA")
                 .descripcion("El TEA Tenerife Espacio de las Artes inaugura una muestra colectiva de artistas canarios contemporáneos que exploran la relación entre el archipiélago y el océano Atlántico. Piezas de instalación, fotografía y videoarte.")
                 .fecha(base.plusDays(1))
                 .hora(LocalTime.of(10, 0))
-                .ubicacion("TEA — Tenerife Espacio de las Artes, Avenida de San Sebastián 10, Santa Cruz")
+                .ubicacion("TEA, Tenerife Espacio de las Artes, Avenida de San Sebastián 10, Santa Cruz")
                 .latitud(28.4670).longitud(-16.2510)
                 .categoria(arte)
                 .imagenUrl(IMG_ARTE)
@@ -238,7 +228,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Feria de Artesanía Canaria — CajaCanarias")
+                .titulo("Feria de Artesanía Canaria: CajaCanarias")
                 .descripcion("Más de 40 artesanos de las siete islas exhiben y venden cerámica, cestería, bordados, joyería en plata y otros oficios tradicionales. Talleres gratuitos para niños sábados y domingos de 11h a 13h.")
                 .fecha(base.plusDays(21))
                 .hora(LocalTime.of(10, 0))
@@ -250,7 +240,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Fotografía Volcánica — Galería Norte")
+                .titulo("Fotografía Volcánica: Galería Norte")
                 .descripcion("El fotógrafo Pedro Nolasco presenta su último trabajo documental sobre los paisajes lávicos del Teide y la Caldera de Las Cañadas. 45 imágenes en gran formato, algunas tomadas desde dron.")
                 .fecha(base.plusDays(30))
                 .hora(LocalTime.of(18, 30))
@@ -261,10 +251,9 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(BigDecimal.ZERO)
                 .build(),
 
-            // ── FESTIVAL ────────────────────────────────────────────────────
 
             Evento.builder()
-                .titulo("Festival Internacional de Música de Canarias — Clausura")
+                .titulo("Festival Internacional de Música de Canarias: Clausura")
                 .descripcion("Concierto de clausura del FIMC en el Auditorio Adán Martín con la participación de la Orquesta Filarmónica de Berlín. El programa incluye obras de Mahler y Shostakóvich. Evento de talla mundial en Tenerife.")
                 .fecha(base.plusDays(6))
                 .hora(LocalTime.of(20, 30))
@@ -289,7 +278,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Festival de Música Electrónica — Siam Park")
+                .titulo("Festival de Música Electrónica: Siam Park")
                 .descripcion("Primer festival de música electrónica en recinto acuático de Canarias. DJs internacionales actuarán junto a las instalaciones del Siam Park en una experiencia diurna única con pools y zonas de baile al sol.")
                 .fecha(base.plusDays(35))
                 .hora(LocalTime.of(12, 0))
@@ -314,7 +303,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Fiestas de Santa Cruz — Verbena Popular")
+                .titulo("Fiestas de Santa Cruz: Verbena Popular")
                 .descripcion("Las fiestas patronales de Santa Cruz de Tenerife incluyen verbenas, elección de la reina, fuegos artificiales y actuaciones de orquestas en el Recinto Ferial. El evento más esperado del verano capitalino.")
                 .fecha(LocalDate.of(2026, 7, 25))
                 .hora(LocalTime.of(22, 0))
@@ -325,14 +314,13 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(BigDecimal.ZERO)
                 .build(),
 
-            // ── CINE ────────────────────────────────────────────────────────
 
             Evento.builder()
-                .titulo("Tenerife Noir — Festival de Cine Negro")
+                .titulo("Tenerife Noir: Festival de Cine Negro")
                 .descripcion("V edición del festival de cine negro y policiaco de Tenerife con proyecciones en versión original, masterclasses con directores y una sección especial dedicada al neo-noir canario. Sede principal en el espacio TEA.")
                 .fecha(base.plusDays(28))
                 .hora(LocalTime.of(18, 0))
-                .ubicacion("TEA — Tenerife Espacio de las Artes, Santa Cruz")
+                .ubicacion("TEA, Tenerife Espacio de las Artes, Santa Cruz")
                 .latitud(28.4670).longitud(-16.2510)
                 .categoria(cine)
                 .imagenUrl(IMG_CINE)
@@ -341,7 +329,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Cine al Aire Libre — Ciclo Verano Guímar")
+                .titulo("Cine al Aire Libre: Ciclo Verano Guímar")
                 .descripcion("El Espacio Cultural del Municipio de Güímar proyecta cada miércoles de julio películas de autor en su patio exterior. Esta semana: «El cuaderno de Sara» de Mota. Sillas disponibles o traer manta.")
                 .fecha(base.plusDays(45))
                 .hora(LocalTime.of(21, 30))
@@ -365,7 +353,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Cortos Canarios — Maratón de Cortometrajes")
+                .titulo("Cortos Canarios: Maratón de Cortometrajes")
                 .descripcion("Ocho horas ininterrumpidas de cortometrajes realizados en Canarias durante el último año. 32 piezas seleccionadas por el jurado, con entrega de premios al finalizar. El público puede votar al mejor corto del público.")
                 .fecha(base.plusDays(40))
                 .hora(LocalTime.of(10, 0))
@@ -376,7 +364,6 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(new BigDecimal("10.00"))
                 .build(),
 
-            // ── GASTRONOMÍA ─────────────────────────────────────────────────
 
             Evento.builder()
                 .titulo("Feria del Vino de Tenerife")
@@ -392,7 +379,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Mercado de Productores — La Laguna Agroecológica")
+                .titulo("Mercado de Productores: La Laguna Agroecológica")
                 .descripcion("Mercado semanal de productores agroecológicos de Tenerife en la Plaza del Cristo. Frutas tropicales, quesos artesanos, mieles del Teide, papas antiguas y mucho más. Directo del campo a tu cesta.")
                 .fecha(base.plusDays(4))
                 .hora(LocalTime.of(9, 0))
@@ -429,7 +416,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Festival Sabor Canario — Los Cristianos")
+                .titulo("Festival Sabor Canario: Los Cristianos")
                 .descripcion("Dos días de cocina canaria de autor y tradicional en el paseo marítimo de Los Cristianos. Doce restaurantes de la isla sur compiten por el premio al mejor plato canario del año. Entrada gratuita, degustaciones desde 2 euros.")
                 .fecha(base.plusDays(50))
                 .hora(LocalTime.of(11, 0))
@@ -440,13 +427,8 @@ public class DataSeeder implements CommandLineRunner {
                 .precio(BigDecimal.ZERO)
                 .build(),
 
-            // ── REAL EVENTS — TENERIFE 2026 ─────────────────────────────────
-            // Sourced from publicly announced programmes (Auditorio de Tenerife,
-            // Tenerife Music Festival, Cook Music Fest, FIMUCITÉ, FICMEC,
-            // MUECA, GastroCanarias, traditional patron-saint festivities).
-
             Evento.builder()
-                .titulo("Tenerife Music Festival — Día Urban: Rels B & Nathy Peluso")
+                .titulo("Tenerife Music Festival, Día Urban: Rels B & Nathy Peluso")
                 .descripcion("Primera jornada del festival más grande del año en Santa Cruz. La noche urbana arranca con Nathy Peluso y cierra con Rels B presentando su nuevo disco. Recinto al aire libre con vistas al puerto.")
                 .fecha(LocalDate.of(2026, 6, 12))
                 .hora(LocalTime.of(20, 0))
@@ -459,7 +441,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Tenerife Music Festival — Día Pop: Camilo & Pablo Alborán")
+                .titulo("Tenerife Music Festival, Día Pop: Camilo & Pablo Alborán")
                 .descripcion("Segunda jornada del festival con la cara más mainstream del pop en español. Camilo y Pablo Alborán comparten cartel en una de las citas musicales del verano en Canarias.")
                 .fecha(LocalDate.of(2026, 6, 13))
                 .hora(LocalTime.of(20, 0))
@@ -472,7 +454,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Cook Music Fest — Reguetón en el Puerto")
+                .titulo("Cook Music Fest: Reguetón en el Puerto")
                 .descripcion("Don Omar regresa a Europa exclusivamente para Cook Music Fest, junto a Farruko, Myke Towers, Lola Índigo y Rubén Blades. Tres días de reguetón, latino y mestizaje frente al Atlántico.")
                 .fecha(LocalDate.of(2026, 7, 17))
                 .hora(LocalTime.of(19, 30))
@@ -485,7 +467,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("FIMUCITÉ 20 — Banda Sonora del Cine")
+                .titulo("FIMUCITÉ 20: Banda Sonora del Cine")
                 .descripcion("Vigésima edición del Festival Internacional de Música de Cine de Tenerife. Conciertos sinfónicos con grandes temas del cine y la televisión, conducidos por la Orquesta Sinfónica de Tenerife.")
                 .fecha(LocalDate.of(2026, 7, 5))
                 .hora(LocalTime.of(20, 30))
@@ -510,7 +492,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("MAPAS 2026: «Bogotá» — Andrea Peña & Artists")
+                .titulo("MAPAS 2026: «Bogotá», Andrea Peña & Artists")
                 .descripcion("Apertura del ciclo Mapas 2026 del Auditorio de Tenerife con la compañía canadiense Andrea Peña & Artists presentando «Bogotá», una pieza híbrida entre danza contemporánea y arte visual.")
                 .fecha(LocalDate.of(2026, 6, 30))
                 .hora(LocalTime.of(20, 0))
@@ -523,7 +505,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("MAPAS 2026: «Hamlet, Prince of Denmark» — Robert Lepage")
+                .titulo("MAPAS 2026: «Hamlet, Prince of Denmark», Robert Lepage")
                 .descripcion("El director canadiense Robert Lepage y Ex Machina presentan una relectura íntima del Hamlet shakespeariano para un único intérprete, Guillaume Côté. Cita imprescindible del programa Mapas.")
                 .fecha(LocalDate.of(2026, 7, 4))
                 .hora(LocalTime.of(20, 0))
@@ -536,7 +518,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("MAPAS 2026: «Hammer» — Alexander Ekman")
+                .titulo("MAPAS 2026: «Hammer», Alexander Ekman")
                 .descripcion("El coreógrafo sueco Alexander Ekman estrena «Hammer» en el Auditorio de Tenerife. Pieza de gran formato que cruza humor, virtuosismo técnico y reflexión sobre el cuerpo en escena.")
                 .fecha(LocalDate.of(2026, 7, 11))
                 .hora(LocalTime.of(20, 0))
@@ -562,7 +544,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("MUECA — Festival de Artes de Calle")
+                .titulo("MUECA: Festival de Artes de Calle")
                 .descripcion("Cuatro días en los que Puerto de la Cruz se transforma en un gran escenario al aire libre. Teatro, circo, danza, payasos y música en vivo de compañías internacionales. Acceso libre.")
                 .fecha(LocalDate.of(2026, 5, 9))
                 .hora(LocalTime.of(11, 0))
@@ -574,7 +556,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Día de Canarias — Plaza de España")
+                .titulo("Día de Canarias: Plaza de España")
                 .descripcion("Celebración del Día de Canarias con folclore, gastronomía típica, talleres infantiles y conciertos de grupos canarios en la Plaza de España. Entrada libre, ambiente familiar.")
                 .fecha(LocalDate.of(2026, 5, 30))
                 .hora(LocalTime.of(12, 0))
@@ -598,7 +580,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Fiestas del Carmen — Procesión Marítima")
+                .titulo("Fiestas del Carmen: Procesión Marítima")
                 .descripcion("La patrona de Puerto de la Cruz sale del Muelle Pesquero en procesión marítima acompañada por decenas de barcas engalanadas. Acto popular con verbenas, fuegos y mucho ambiente vecinal.")
                 .fecha(LocalDate.of(2026, 7, 16))
                 .hora(LocalTime.of(19, 0))
@@ -610,7 +592,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Fiestas de la Candelaria — Patrona de Canarias")
+                .titulo("Fiestas de la Candelaria: Patrona de Canarias")
                 .descripcion("La Villa de Candelaria recibe a miles de peregrinos en la fiesta mayor de la patrona del archipiélago. Misa, procesión, fuegos artificiales y representación teatral de la aparición de la Virgen.")
                 .fecha(LocalDate.of(2026, 8, 14))
                 .hora(LocalTime.of(19, 0))
@@ -634,7 +616,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("FICMEC — Festival Internacional de Cine Medioambiental")
+                .titulo("FICMEC: Festival Internacional de Cine Medioambiental")
                 .descripcion("28ª edición del FICMEC, dedicado al cine sobre ecología, naturaleza y medioambiente. Proyecciones gratuitas al aire libre, mesas redondas y feria agroecológica complementaria.")
                 .fecha(LocalDate.of(2026, 5, 30))
                 .hora(LocalTime.of(20, 30))
@@ -647,7 +629,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("GastroCanarias 2026 — Salón Gastronómico")
+                .titulo("GastroCanarias 2026: Salón Gastronómico")
                 .descripcion("Undécima edición del salón profesional de la gastronomía canaria. 17.000 m² de exposición con más de 200 stands de productores, bodegas, chefs y restauradores del archipiélago. Catas y showcooking en directo.")
                 .fecha(LocalDate.of(2026, 5, 20))
                 .hora(LocalTime.of(10, 0))
@@ -659,10 +641,9 @@ public class DataSeeder implements CommandLineRunner {
                 .enlaceCompra("https://salongastronomicodecanarias.com")
                 .build(),
 
-            // ── EXTRA JUNIO 2026 ────────────────────────────────────────────
 
             Evento.builder()
-                .titulo("Corpus Christi en La Laguna — Alfombras")
+                .titulo("Corpus Christi en La Laguna: Alfombras")
                 .descripcion("San Cristóbal de La Laguna celebra el Corpus Christi con 68 alfombras de flores, sal y materiales naturales decorando las calles del casco histórico, por donde pasa la procesión del Santísimo Sacramento. Una tradición centenaria del Patrimonio de la Humanidad.")
                 .fecha(LocalDate.of(2026, 6, 7))
                 .hora(LocalTime.of(11, 0))
@@ -674,7 +655,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Corpus Christi en La Orotava — Alfombras de Flores")
+                .titulo("Corpus Christi en La Orotava: Alfombras de Flores")
                 .descripcion("La gran tapiz de tierras volcánicas del Teide tiñe la plaza del Ayuntamiento de La Orotava en la cita declarada de Interés Turístico Nacional. Decenas de alfombras florales únicas elaboradas por las hermandades locales durante toda la noche anterior.")
                 .fecha(LocalDate.of(2026, 6, 14))
                 .hora(LocalTime.of(10, 0))
@@ -686,7 +667,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Dúo del Valle — Recital de Piano a Cuatro Manos")
+                .titulo("Dúo del Valle: Recital de Piano a Cuatro Manos")
                 .descripcion("Los hermanos Víctor y Luis del Valle abren el ciclo Primavera Musical del Auditorio con un programa romántico a cuatro manos: obras de Schubert, Brahms y Ravel. Duración aproximada 75 minutos sin descanso.")
                 .fecha(LocalDate.of(2026, 6, 2))
                 .hora(LocalTime.of(20, 0))
@@ -699,7 +680,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("FICMEC — Sede Icod de los Vinos")
+                .titulo("FICMEC: Sede Icod de los Vinos")
                 .descripcion("Segunda sede del Festival Internacional de Cine Medioambiental de Canarias. Proyecciones gratuitas al aire libre con largometrajes y cortos seleccionados, mesa redonda sobre cambio climático y feria agroecológica complementaria.")
                 .fecha(LocalDate.of(2026, 6, 6))
                 .hora(LocalTime.of(20, 0))
@@ -712,11 +693,11 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("La Misa — Ritual de Techno al Aire Libre")
+                .titulo("La Misa: Ritual de Techno al Aire Libre")
                 .descripcion("Ceremonia inmersiva de techno al amanecer en un emplazamiento secreto del sur. Puesta en escena oscura, cargada de energía, pensada como un ritual sagrado para la pista. Producción de Farra World, ubicación se revela 24 h antes del evento.")
                 .fecha(LocalDate.of(2026, 6, 27))
                 .hora(LocalTime.of(23, 0))
-                .ubicacion("Ubicación secreta — Sur de Tenerife")
+                .ubicacion("Ubicación secreta, Sur de Tenerife")
                 .latitud(28.0617).longitud(-16.7241)
                 .categoria(musica)
                 .imagenUrl(IMG_FESTIVAL)
@@ -724,10 +705,9 @@ public class DataSeeder implements CommandLineRunner {
                 .enlaceCompra("https://farra.world")
                 .build(),
 
-            // ── MÁS JUNIO 2026 — 10 EVENTOS ADICIONALES ─────────────────────
 
             Evento.builder()
-                .titulo("Tenerife Brass Quintet — Concierto de Cámara")
+                .titulo("Tenerife Brass Quintet: Concierto de Cámara")
                 .descripcion("Programa de música para quinteto de metales con obras de Bach, Gabrieli y arreglos contemporáneos. Una hora de música íntima en la Sala de Cámara del Auditorio.")
                 .fecha(LocalDate.of(2026, 6, 4))
                 .hora(LocalTime.of(20, 30))
@@ -739,7 +719,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Exposición «Volcanes Vivos» — MUNA")
+                .titulo("Exposición «Volcanes Vivos»: MUNA")
                 .descripcion("El Museo de la Naturaleza y Arqueología de Tenerife inaugura una muestra interactiva sobre la actividad volcánica del archipiélago: piezas de lava, modelos 3D del Teide y testimonios de geólogos locales.")
                 .fecha(LocalDate.of(2026, 6, 8))
                 .hora(LocalTime.of(10, 0))
@@ -787,7 +767,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Espectáculo Flamenco — Sala El Tablao")
+                .titulo("Espectáculo Flamenco: Sala El Tablao")
                 .descripcion("Noche íntima de flamenco con la bailaora María del Mar Moreno, la guitarra de Diego del Morao y el cante de Antonio Reyes. Aforo limitado a 60 espectadores, copa incluida en la entrada.")
                 .fecha(LocalDate.of(2026, 6, 18))
                 .hora(LocalTime.of(21, 30))
@@ -835,7 +815,7 @@ public class DataSeeder implements CommandLineRunner {
                 .build(),
 
             Evento.builder()
-                .titulo("Sinfónica de Tenerife — Música Latinoamericana")
+                .titulo("Sinfónica de Tenerife: Música Latinoamericana")
                 .descripcion("Cierre de temporada de la OST con un programa íntegramente latinoamericano: Piazzolla, Ginastera y Villa-Lobos. Direción invitada de Andrés Salado y solistas de la propia orquesta.")
                 .fecha(LocalDate.of(2026, 6, 26))
                 .hora(LocalTime.of(20, 0))
@@ -845,27 +825,231 @@ public class DataSeeder implements CommandLineRunner {
                 .imagenUrl(IMG_MUSICA)
                 .precio(new BigDecimal("20.00"))
                 .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Concierto de Verano: Efecto Pasillo")
+                .descripcion("La banda canaria Efecto Pasillo presenta su nueva gira en la capital con un directo lleno de himnos pop para bailar toda la noche. Concierto al aire libre en el corazón de Santa Cruz.")
+                .fecha(LocalDate.of(2026, 7, 30))
+                .hora(LocalTime.of(21, 30))
+                .ubicacion("Plaza de España, Santa Cruz de Tenerife")
+                .latitud(28.4631).longitud(-16.2526)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA)
+                .precio(new BigDecimal("22.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Noche en Blanco de Santa Cruz")
+                .descripcion("Museos, galerías y comercios del centro abren sus puertas hasta la madrugada con actuaciones, talleres y música en la calle. Una noche cultural gratuita para recorrer la ciudad a pie.")
+                .fecha(LocalDate.of(2026, 7, 31))
+                .hora(LocalTime.of(19, 0))
+                .ubicacion("Centro histórico, Santa Cruz de Tenerife")
+                .latitud(28.4645).longitud(-16.2540)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Festival Phe en Puerto de la Cruz")
+                .descripcion("Dos jornadas de música indie, electrónica y pop nacional e internacional frente al Atlántico. El festival de referencia del norte de Tenerife regresa con cartel renovado y zona gastronómica.")
+                .fecha(LocalDate.of(2026, 8, 1))
+                .hora(LocalTime.of(18, 0))
+                .ubicacion("Parque San Francisco, Puerto de la Cruz")
+                .latitud(28.4157).longitud(-16.5469)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(new BigDecimal("30.00"))
+                .enlaceCompra("https://phefestival.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Los Sabandeños: Folclore Canario")
+                .descripcion("La legendaria agrupación folclórica ofrece un recital de isas, folías y boleros canarios en el Teatro Leal. Un repaso al cancionero tradicional del archipiélago con más de cincuenta años de historia.")
+                .fecha(LocalDate.of(2026, 8, 8))
+                .hora(LocalTime.of(20, 30))
+                .ubicacion("Teatro Leal, San Cristóbal de La Laguna")
+                .latitud(28.4882).longitud(-16.3157)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA2)
+                .precio(new BigDecimal("15.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Noche de Perseidas en el Teide")
+                .descripcion("Observación guiada de la lluvia de estrellas de las Perseidas desde uno de los mejores cielos del mundo. Telescopios, monitores especializados y traslado en autobús desde La Orotava incluidos.")
+                .fecha(LocalDate.of(2026, 8, 12))
+                .hora(LocalTime.of(22, 30))
+                .ubicacion("Parque Nacional del Teide, Las Cañadas")
+                .latitud(28.2724).longitud(-16.6425)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(new BigDecimal("35.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Cine de Verano bajo las Estrellas")
+                .descripcion("Proyecciones al aire libre cada miércoles de agosto en el Parque García Sanabria. Esta semana, una comedia española reciente en pantalla gigante. Hamacas disponibles o trae tu manta.")
+                .fecha(LocalDate.of(2026, 8, 13))
+                .hora(LocalTime.of(21, 45))
+                .ubicacion("Parque García Sanabria, Santa Cruz de Tenerife")
+                .latitud(28.4672).longitud(-16.2572)
+                .categoria(cine)
+                .imagenUrl(IMG_CINE)
+                .precio(new BigDecimal("3.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Romería de San Roque en Garachico")
+                .descripcion("Una de las romerías más queridas del norte. Carretas engalanadas, trajes típicos, parrandas y reparto de vino y productos de la tierra por las calles empedradas de la villa marinera.")
+                .fecha(LocalDate.of(2026, 8, 16))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Casco histórico, Garachico")
+                .latitud(28.3737).longitud(-16.7639)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Festival de Blues del Atlántico")
+                .descripcion("Tres escenarios y una decena de bandas de blues y soul llegadas de Europa y América se dan cita en el paseo marítimo. Entrada libre y jam sessions abiertas hasta la medianoche.")
+                .fecha(LocalDate.of(2026, 8, 21))
+                .hora(LocalTime.of(19, 30))
+                .ubicacion("Paseo Marítimo, Puerto de la Cruz")
+                .latitud(28.4180).longitud(-16.5480)
+                .categoria(musica)
+                .imagenUrl(IMG_JAZZ)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Jornadas del Atún y el Mojo")
+                .descripcion("Los restaurantes de Los Cristianos celebran la temporada del atún con menús degustación y showcooking de mojos canarios. Rutas de tapas por el casco a precios populares durante todo el fin de semana.")
+                .fecha(LocalDate.of(2026, 8, 22))
+                .hora(LocalTime.of(13, 0))
+                .ubicacion("Paseo Marítimo Los Cristianos, Arona")
+                .latitud(28.0527).longitud(-16.7155)
+                .categoria(gastro)
+                .imagenUrl(IMG_GASTRO)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Teatro Clásico: «La Vida es Sueño»")
+                .descripcion("La compañía Teatro del Ángel monta el clásico de Calderón de la Barca en el histórico Teatro Guimerá. Una puesta en escena sobria y contemporánea del gran texto del Siglo de Oro español.")
+                .fecha(LocalDate.of(2026, 8, 28))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Teatro Guimerá, Calle Imeldo Serís 1, Santa Cruz")
+                .latitud(28.4629).longitud(-16.2530)
+                .categoria(teatro)
+                .imagenUrl(IMG_TEATRO)
+                .precio(new BigDecimal("14.00"))
+                .enlaceCompra("https://www.teatroguimera.es")
+                .build(),
+
+            Evento.builder()
+                .titulo("Encuentro de Bandas de Música de Tenerife")
+                .descripcion("Las bandas municipales de la isla se reúnen para un concierto conjunto de pasodobles y música popular en la Plaza del Adelantado. Cita gratuita para toda la familia al final del verano.")
+                .fecha(LocalDate.of(2026, 9, 6))
+                .hora(LocalTime.of(12, 0))
+                .ubicacion("Plaza del Adelantado, San Cristóbal de La Laguna")
+                .latitud(28.4874).longitud(-16.3159)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Muestra de Cine Español en Yelmo")
+                .descripcion("Ciclo de estrenos del cine español del año con coloquios y presencia de directores. Cada sesión incluye un cortometraje canario seleccionado como telonero de la película principal.")
+                .fecha(LocalDate.of(2026, 9, 11))
+                .hora(LocalTime.of(18, 30))
+                .ubicacion("Multicines Yelmo, Centro Comercial Meridiano, Santa Cruz")
+                .latitud(28.4694).longitud(-16.2535)
+                .categoria(cine)
+                .imagenUrl(IMG_CINE)
+                .precio(new BigDecimal("7.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Fiestas del Santísimo Cristo de La Laguna")
+                .descripcion("La fiesta grande de La Laguna en honor a su patrón, con procesión, feria, conciertos y el célebre espectáculo pirotécnico de los Fuegos del Cristo sobre el cielo del casco histórico.")
+                .fecha(LocalDate.of(2026, 9, 14))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Plaza del Cristo, San Cristóbal de La Laguna")
+                .latitud(28.4891).longitud(-16.3143)
+                .categoria(festival)
+                .imagenUrl(IMG_FESTIVAL)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Festival de Teatro de La Laguna")
+                .descripcion("Una semana de artes escénicas con compañías nacionales e internacionales en el Teatro Leal y en espacios alternativos de la ciudad. Teatro de sala, calle y propuestas para público infantil.")
+                .fecha(LocalDate.of(2026, 9, 18))
+                .hora(LocalTime.of(20, 0))
+                .ubicacion("Teatro Leal, San Cristóbal de La Laguna")
+                .latitud(28.4882).longitud(-16.3157)
+                .categoria(teatro)
+                .imagenUrl(IMG_TEATRO)
+                .precio(new BigDecimal("12.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Feria de Artesanía de Otoño")
+                .descripcion("Artesanos de las siete islas exponen cerámica, cestería, cuchillos canarios y joyería tradicional. Demostraciones de oficios en directo y talleres gratuitos para niños durante el fin de semana.")
+                .fecha(LocalDate.of(2026, 9, 19))
+                .hora(LocalTime.of(10, 0))
+                .ubicacion("Espacio Cultural CajaCanarias, Calle Méndez Núñez 60, Santa Cruz")
+                .latitud(28.4641).longitud(-16.2538)
+                .categoria(arte)
+                .imagenUrl(IMG_ARTE)
+                .precio(BigDecimal.ZERO)
+                .build(),
+
+            Evento.builder()
+                .titulo("Sinfónica de Tenerife: Apertura de Temporada")
+                .descripcion("La Orquesta Sinfónica de Tenerife inaugura la nueva temporada con la Segunda Sinfonía de Mahler «Resurrección», con coro y solistas invitados en el Auditorio Adán Martín.")
+                .fecha(LocalDate.of(2026, 9, 25))
+                .hora(LocalTime.of(19, 30))
+                .ubicacion("Auditorio de Tenerife Adán Martín, Santa Cruz")
+                .latitud(28.4636).longitud(-16.2518)
+                .categoria(musica)
+                .imagenUrl(IMG_MUSICA2)
+                .precio(new BigDecimal("22.00"))
+                .enlaceCompra("https://www.auditoriodetenerife.com")
+                .build(),
+
+            Evento.builder()
+                .titulo("Vendimia y Cata en Tacoronte")
+                .descripcion("Jornada de puertas abiertas en las bodegas de la Denominación de Origen Tacoronte-Acentejo. Participa en la pisa de la uva, recorre los viñedos y disfruta de una cata guiada con productos locales.")
+                .fecha(LocalDate.of(2026, 9, 27))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Casa del Vino, El Sauzal, Tacoronte-Acentejo")
+                .latitud(28.4799).longitud(-16.4344)
+                .categoria(gastro)
+                .imagenUrl(IMG_GASTRO)
+                .precio(new BigDecimal("18.00"))
+                .build(),
+
+            Evento.builder()
+                .titulo("Exposición: «Luz de Otoño»")
+                .descripcion("Muestra colectiva de pintura y fotografía de artistas canarios sobre la luz cambiante del archipiélago al final del verano. Visita guiada con los autores los sábados a mediodía.")
+                .fecha(LocalDate.of(2026, 9, 5))
+                .hora(LocalTime.of(11, 0))
+                .ubicacion("Sala de Arte La Recova, Santa Cruz de Tenerife")
+                .latitud(28.4670).longitud(-16.2515)
+                .categoria(arte)
+                .imagenUrl(IMG_ARTE)
+                .precio(new BigDecimal("5.00"))
                 .build()
         );
 
-        // Idempotent: skip events whose title is already in the DB. Lets new
-        // entries added to this list land on the next boot without wiping
-        // existing data.
-        java.util.Set<String> existingTitles = eventoRepository.findAll().stream()
-            .map(Evento::getTitulo)
-            .collect(Collectors.toSet());
-
-        List<Evento> toInsert = eventos.stream()
-            .filter(e -> !existingTitles.contains(e.getTitulo()))
-            .toList();
-
-        if (toInsert.isEmpty()) {
-            log.info("All {} defined events already present — nothing to seed.", eventos.size());
-            return;
-        }
-
-        eventoRepository.saveAll(toInsert);
-        log.info("Seeded {} new events ({} already present).",
-                toInsert.size(), eventos.size() - toInsert.size());
+        savedEventRepository.deleteAllInBatch();
+        eventoRepository.deleteAllInBatch();
+        eventoRepository.saveAll(eventos);
+        log.info("Seeded {} events.", eventos.size());
     }
 }

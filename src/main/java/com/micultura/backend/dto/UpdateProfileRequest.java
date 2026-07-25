@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 /**
- * Partial profile update — every field is optional. The service treats null
+ * Partial profile update: every field is optional. The service treats null
  * as "leave alone" and only validates fields that the user actually provided.
  *
  * To change the password, both currentPassword and newPassword must be set;

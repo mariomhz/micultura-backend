@@ -30,21 +30,20 @@ public class EventoController {
     private static final Set<String> SORTABLE_FIELDS = Set.of("fecha", "precio", "titulo");
     private static final String DEFAULT_SORT_FIELD = "fecha";
 
-    // ── Public read endpoints ────────────────────────────────────────────────
 
     /**
      * GET /api/events
      *
      * Query params:
-     *   category   — categoria id
-     *   search     — text search in titulo/descripcion
-     *   fechaDesde — ISO date lower bound
-     *   fechaHasta — ISO date upper bound
-     *   precioMin  — minimum price (inclusive)
-     *   precioMax  — maximum price (inclusive)
-     *   page       — 0-indexed page number (default 0)
-     *   size       — page size (default 20, max 100)
-     *   sort       — field,direction e.g. "fecha,asc" (default "fecha,asc")
+     *   category  : categoria id
+     *   search    : text search in titulo/descripcion
+     *   fechaDesde: ISO date lower bound
+     *   fechaHasta: ISO date upper bound
+     *   precioMin : minimum price (inclusive)
+     *   precioMax : maximum price (inclusive)
+     *   page      : 0-indexed page number (default 0)
+     *   size      : page size (default 20, max 100)
+     *   sort      : field,direction e.g. "fecha,asc" (default "fecha,asc")
      */
     @GetMapping
     public ResponseEntity<PagedResponse<EventoResponse>> getAll(
@@ -71,9 +70,8 @@ public class EventoController {
         return ResponseEntity.ok(eventoService.findById(id));
     }
 
-    // ── Admin mutations ──────────────────────────────────────────────────────
 
-    /** POST /api/events — requires ADMIN role */
+    /** POST /api/events: requires ADMIN role */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventoResponse> create(@Valid @RequestBody EventoRequest request) {
@@ -81,7 +79,7 @@ public class EventoController {
                 .body(eventoService.create(request));
     }
 
-    /** PUT /api/events/{id} — requires ADMIN role */
+    /** PUT /api/events/{id}: requires ADMIN role */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventoResponse> update(
@@ -91,7 +89,7 @@ public class EventoController {
         return ResponseEntity.ok(eventoService.update(id, request));
     }
 
-    /** DELETE /api/events/{id} — soft delete, requires ADMIN role */
+    /** DELETE /api/events/{id}: soft delete, requires ADMIN role */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -99,7 +97,6 @@ public class EventoController {
         return ResponseEntity.noContent().build();
     }
 
-    // ── Helper ───────────────────────────────────────────────────────────────
 
     private Pageable buildPageable(int page, int size, String sort) {
         String[] parts = sort == null ? new String[0] : sort.split(",");

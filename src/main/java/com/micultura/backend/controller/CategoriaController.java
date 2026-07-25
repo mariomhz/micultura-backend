@@ -15,13 +15,13 @@ public class CategoriaController {
 
     private final CategoriaService categoriaService;
 
-    /** GET /api/categories — list all categories */
+    /** GET /api/categories: list all categories */
     @GetMapping
     public ResponseEntity<List<CategoriaResponse>> getAll() {
         return ResponseEntity.ok(categoriaService.findAll());
     }
 
-    /** GET /api/categories/{id} — single category */
+    /** GET /api/categories/{id}: single category */
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(categoriaService.findById(id));

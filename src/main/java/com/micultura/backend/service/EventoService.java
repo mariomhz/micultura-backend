@@ -25,8 +25,6 @@ public class EventoService {
     private final EventoRepository    eventoRepository;
     private final CategoriaRepository categoriaRepository;
 
-    // ── Queries ─────────────────────────────────────────────────────────────
-
     public PagedResponse<EventoResponse> findAll(
             Long       categoriaId,
             String     search,
@@ -38,6 +36,7 @@ public class EventoService {
     ) {
         Specification<Evento> spec = Specification
                 .where(EventoSpecification.activo())
+                .and(EventoSpecification.noFinalizado())
                 .and(EventoSpecification.byCategoria(categoriaId))
                 .and(EventoSpecification.searchText(search))
                 .and(EventoSpecification.fechaDesde(fechaDesde))
@@ -57,8 +56,6 @@ public class EventoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado: " + id));
         return toResponse(evento);
     }
-
-    // ── Admin mutations ──────────────────────────────────────────────────────
 
     public EventoResponse create(EventoRequest req) {
         Categoria categoria = categoriaOrThrow(req.categoriaId());
@@ -98,15 +95,12 @@ public class EventoService {
         return toResponse(eventoRepository.save(evento));
     }
 
-    /** Soft delete — sets activo = false */
     public void delete(Long id) {
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado: " + id));
         evento.setActivo(false);
         eventoRepository.save(evento);
     }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private Categoria categoriaOrThrow(Long id) {
         return categoriaRepository.findById(id)

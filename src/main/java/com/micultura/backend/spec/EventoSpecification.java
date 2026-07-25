@@ -20,6 +20,11 @@ public final class EventoSpecification {
         return (root, query, cb) -> cb.isTrue(root.get("activo"));
     }
 
+    public static Specification<Evento> noFinalizado() {
+        return (root, query, cb) ->
+                cb.greaterThanOrEqualTo(root.get("fecha"), LocalDate.now());
+    }
+
     /** Filter by exact category id. */
     public static Specification<Evento> byCategoria(Long categoriaId) {
         if (categoriaId == null) return null;

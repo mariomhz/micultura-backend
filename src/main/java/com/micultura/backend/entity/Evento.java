@@ -51,7 +51,7 @@ public class Evento {
     @Column(length = 500)
     private String enlaceCompra;
 
-    /** Soft-delete flag — false = logically deleted */
+    /** Soft-delete flag: false = logically deleted */
     @Column(nullable = false)
     @Builder.Default
     private boolean activo = true;

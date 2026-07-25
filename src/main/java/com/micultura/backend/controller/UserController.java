@@ -32,7 +32,6 @@ public class UserController {
     private final UserService userService;
     private final SavedEventService savedEventService;
 
-    // ── Profile ───────────────────────────────────────────────────────────
 
     @GetMapping("/me")
     public UserResponse me() {
@@ -44,7 +43,6 @@ public class UserController {
         return userService.updateProfile(currentEmail(), request);
     }
 
-    // ── Saved events ──────────────────────────────────────────────────────
 
     @GetMapping("/me/saved")
     public List<EventoResponse> listSaved() {
@@ -68,7 +66,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
 
     private String currentEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

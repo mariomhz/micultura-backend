@@ -28,7 +28,6 @@ public class CategoriaService {
         return toResponse(cat);
     }
 
-    // ── Mapper ──────────────────────────────────────────────────────────────
 
     public static CategoriaResponse toResponse(Categoria c) {
         return new CategoriaResponse(c.getId(), c.getNombre(), c.getDescripcion(), c.getIcono());

@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ignored) {
-            // malformed or expired token — proceed unauthenticated
+            // malformed or expired token: proceed unauthenticated
         }
 
         filterChain.doFilter(request, response);
