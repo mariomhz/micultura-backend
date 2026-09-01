@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -26,4 +27,7 @@ public interface EventoRepository
     @Override
     @EntityGraph(attributePaths = "categoria")
     Optional<Evento> findById(Long id);
+
+    /** How many events have not happened yet, used to decide whether to reseed. */
+    long countByFechaGreaterThanEqual(LocalDate fecha);
 }

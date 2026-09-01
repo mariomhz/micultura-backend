@@ -73,6 +73,15 @@ public class DataSeeder implements CommandLineRunner {
 
 
     private void seedEventos() {
+        // Reseeding wipes events, and saved events go with them. Only do that
+        // when the catalogue has actually run out, so a restart on free hosting
+        // does not clear what people have saved.
+        long upcoming = eventoRepository.countByFechaGreaterThanEqual(LocalDate.now());
+        if (upcoming > 0) {
+            log.info("{} upcoming events already present, skipping seed.", upcoming);
+            return;
+        }
+
         Map<String, Categoria> cats = categoriaRepository.findAll().stream()
             .collect(Collectors.toMap(Categoria::getNombre, Function.identity()));
 
