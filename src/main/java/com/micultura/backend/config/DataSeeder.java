@@ -83,7 +83,7 @@ public class DataSeeder implements CommandLineRunner {
         Categoria cine     = cats.get("Cine");
         Categoria gastro   = cats.get("Gastronomía");
 
-        LocalDate base = LocalDate.of(2026, 5, 15);
+        LocalDate base = LocalDate.now();
 
         List<Evento> eventos = List.of(
 
